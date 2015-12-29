@@ -1,0 +1,29 @@
+{
+  "name": "veracross",
+  "version": "1.2.0",
+  "description": "node module for API calls to Veracross",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "veracross",
+    "api"
+  ],
+  "author": "sheamusburns",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/sheamusburns/veracross.git",
+    "web": "https://github.com/sheamusburns/veracross"
+  },
+  "issues": {
+    "url": "https://github.com/sheamusburns/veracross/issues",
+    "email": "sheamusburns@gmail.com"
+  },
+  "dependencies": {
+    "https": "^1.0.0",
+    "querystring": "^0.2.0",
+    "xml2js": "^0.4.15"
+  }
+}
