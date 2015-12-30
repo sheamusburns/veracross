@@ -58,8 +58,6 @@ module.exports = (function(){
 						res.on('end', function(){
 							data = data.concat(JSON.parse(tempdata));
 							pageNum++
-							pageQuery();
-							options();
 							if (pageNum > pages) {
 								console.log('GET:   got %s objects\nGET: ...end api calls...', data.length);
 								callback(data);
