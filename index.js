@@ -12,19 +12,29 @@ module.exports = (function(){
 				this.apiOptions.host = 'veracross.com';
 				this.apiOptions.domainID = domainID;
 				this.apiOptions.auth = user + ':' + pass;
-				//console.log(this.apiOptions);
 				return;
 		},
 		get: function(endpoint, query, callback) {
 			var that = this;
 			var endpoint = endpoint;
 			var queryObj = querystring.parse(query);
+			if (queryObj.count && (Number(queryObj.count) <= 0 || Number(queryObj.count) > 1000)) {
+				console.log('**query count must be a valid positive integer between 1 and 1000, defaulting to 1000**');
+				queryObj.count = 1000;
+			}
 			var countPerPage = function(obj) {
-				return queryObj.count ? Number(queryObj.count) : 1000;
+				if (queryObj.count && (Number(queryObj.count) <= 0 || Number(queryObj.count) > 1000)) {
+					console.log('query count must be a valid positive integer between 1 and 1000, defaulting to 1000');
+					return 1000;
+				} else if (queryObj.count && Number(queryObj.count)) {
+					return Number(queryObj.count);
+				} else {
+					throw new Error("Count paramater was not a valid positive integer")
+				}
 			};
-
-			var whichJSON = endpoint + '.json' + '?' + query;
-			console.log('GET: acquiring details on %s', endpoint, whichJSON);
+			newQueryString = querystring.stringify(queryObj);
+			var whichJSON = endpoint + '.json' + '?' + newQueryString;
+			console.log('GET: acquiring details on %s endpoint: ', endpoint, whichJSON);
 			var pageNum = 1;
 			var pageQuery = function() {
 				return '&page=' + pageNum;
@@ -44,9 +54,15 @@ module.exports = (function(){
 			var initReq = https.get(options(), function(res) {
 				xTotal = res.headers['x-total-count'];
 				pages = Math.ceil(xTotal / countPerPage());
-				console.log('GET: num of calls to make:', pages);
-				console.log('GET: ...start api calls...\nGET:   getting %s objects', xTotal);
-				apiCall();
+				if (!isNaN(pages)) {
+					apiCall();
+					console.log('GET: num of calls to make:', pages);
+					console.log('GET: ...start api calls...\nGET:   getting %s objects', xTotal);
+				} else {
+					throw new Error('Initial request did not return a valid number of items to get');
+				}
+
+				
 				function apiCall() {
 					tempdata = '';
 					https.get(options(), function(res) {
@@ -107,8 +123,6 @@ module.exports = (function(){
 			  	});
 			});
 			req.end();
-
-
 			req.on('error', function(e) {
 					console.error(e);
 			});
